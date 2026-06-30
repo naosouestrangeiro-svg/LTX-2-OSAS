@@ -40,10 +40,13 @@ jobs:
           # This will attempt an SSH auth handshake and print helpful debug lines (secrets masked).
           ssh -T -v git@huggingface.co || true
 
-      - name: Push to Hugging Face
-        env:
-          # Make sure SSH respects the known_hosts we've added
-          GIT_SSH_COMMAND: 'ssh -o StrictHostKeyChecking=yes'
-        run: |
-          # Add remote if missing (ignore error if already exists)
-          git
+  - name: Push to Hugging Face
+    env:
+      GIT_SSH_COMMAND: 'ssh -o StrictHostKeyChecking=yes'
+    run: |
+      # Add remote if missing (ignore error if already exists)
+      git remote add hf git@huggingface.co:Oncesane/LTX-2-3-OSAS.git || true
+      
+      # Push all branches and tags
+      git push -u hf --all
+      git push -u hf --tags
