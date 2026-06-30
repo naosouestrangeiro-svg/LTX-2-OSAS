@@ -2,23 +2,48 @@ name: Sync to Hugging Face
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   sync:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Push to Huggingface
-        run: git lfs install
 
-      - name: Setup SSH
+    steps:
+      - name: Checkout repository (with LFS)
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Install Git LFS
+        run: git lfs install --system
+
+      - name: Configure git user
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Setup SSH agent (load private key)
+        uses: webfactory/ssh-agent@v0.8.1
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Add Hugging Face to known_hosts
         run: |
           mkdir -p $HOME/.ssh
-          echo "${{secrets.SSH_PRIVATE_KEY}}" > $HOME/.ssh/id_rsa
-          chmod 600 $HOME/.ssh/id_rsa
           ssh-keyscan -H huggingface.co >> $HOME/.ssh/known_hosts
-      - name: Push to Hugging Face
+          chmod 644 $HOME/.ssh/known_hosts
+
+      - name: Debug SSH connection (optional — will not fail the job)
         run: |
-          git remote add huggingface git@huggingface.co:Oncesane/LTX-2-3-OSAS.git
-          git push huggingface main
+          ssh -V || true
+          ssh-keyscan -H huggingface.co || true
+          # This will attempt an SSH auth handshake and print helpful debug lines (secrets masked).
+          ssh -T -v git@huggingface.co || true
+
+      - name: Push to Hugging Face
+        env:
+          # Make sure SSH respects the known_hosts we've added
+          GIT_SSH_COMMAND: 'ssh -o StrictHostKeyChecking=yes'
+        run: |
+          # Add remote if missing (ignore error if already exists)
+          git
