@@ -13,7 +13,7 @@ jobs:
         run: git lfs install
       - name: Push to Hugging Face
         run: |
-          git remote add hf https://user:${GIT_TOKEN}@huggingface.co/Oncesane/LTX-2-3-OSAS
+          git remote add hf //Oncesane:GIT_TOKEN@huggingface.co/Oncesane/LTX-2-3-OSAS
           git push hf main
         env:
           HF_TOKEN: ${{ secrets.GIT_TOKEN }}
