@@ -9,11 +9,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
       - name: Install Git LFS
         run: git lfs install
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${HF_SSH_KEY}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan huggingface.co >> ~/.ssh/known_hosts
+        env:
+          HF_SSH_KEY: ${{ secrets.HF_SSH_KEY }}
+
       - name: Push to Hugging Face
         run: |
-          git remote add hf https://Oncesane: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@huggingface.co/Oncesane/LTX-2-3-OSAS
+          git remote add hf git@huggingface.co:Oncesane/LTX-2-3-OSAS.git
           git push hf main
-        env:
-          HF_TOKEN: ${{ secrets.GIT_TOKEN }}
