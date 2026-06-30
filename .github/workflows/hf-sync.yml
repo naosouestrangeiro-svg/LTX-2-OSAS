@@ -16,8 +16,8 @@ jobs:
         run: |
           mkdir -p $HOME/.ssh
           echo "${{secrets.SSH_PRIVATE_KEY}}" > $HOME/.ssh/id_rsa
-          chmod 600 $HOME/ssh/id_rsa
-          ssh-keyscan -H huggingface.co >> $HOME/ssh/known_hosts
+          chmod 600 $HOME/.ssh/id_rsa
+          ssh-keyscan -H huggingface.co >> $HOME/.ssh/known_hosts
       - name: Push to Hugging Face
         run: |
           git remote add huggingface git@huggingface.co:Oncesane/LTX-2-3-OSAS.git
