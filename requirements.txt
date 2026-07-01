@@ -1,0 +1,9 @@
+gradio>=4.0.0
+torch>=2.7
+torchaudio
+transformers>=4.52
+safetensors
+av
+pillow
+openimageio
+tqdm
